@@ -3,7 +3,9 @@ import { getMovies } from '../temp/MovieService'
 
 export default class MoviesPage extends Component {
     state = {
-        movies : getMovies()
+        movies: getMovies(),
+        currSearchText: "",
+        filterMovies:getMovies()
     }
     deleteEntry = (id) => {
         let filtereMovies = this.state.movies
@@ -14,15 +16,33 @@ export default class MoviesPage extends Component {
             movies: filtereMovies
         })
     }
+
+    setCurrentText = (e) => {
+        let task = e.target.value;
+        let filteredArr = this.state.movies.filter((movieObj) => {
+            let title = movieObj.title.trim().toLowerCase();
+            return title.includes(task.trim().toLowerCase());
+        })
+        
+        if (task === "") {
+            filteredArr = this.state.movies;
+        }
+        this.setState({
+            currSearchText: task,
+            filterMovies : filteredArr
+        })
+    }
     render() {
         // console.log(this.state.movies);
-        let {movies} = this.state;
+        let { movies, currSearchText ,filterMovies} = this.state;
+        // console.log(currSearchText);
         return (
             <div className="row">
                 <div className="col-3">
                     hello
                 </div>
                 <div className="col-9">
+                    <input type="search" value={currSearchText} onChange= {this.setCurrentText} />
                     <table className="table">
                         <thead>
                             <tr>
@@ -36,7 +56,7 @@ export default class MoviesPage extends Component {
                             
                         </thead>
                         <tbody>
-                            {movies.map((movieObj) =>{
+                            {filterMovies.map((movieObj) =>{
 
                                 return (<tr scope="row" key={movieObj._id} >
                                 <td>{movieObj.title}   </td>
