@@ -48,8 +48,10 @@ export default class MoviesPage extends Component {
 
     // alow to change the no of elements in page
     changelimit = (e) => {
-        console.log("hello");
+        // console.log("hello");
         let currLimit = e.target.value;
+        if (currLimit < 1)
+            return;
         this.setState({
             limit: currLimit
         })
@@ -70,6 +72,12 @@ export default class MoviesPage extends Component {
         }
         this.setState({
             movies: sortedMovies
+        })
+    }
+
+    changeCurrentPage = (pageNumber) => {
+        this.setState({
+            currentPage:pageNumber
         })
     }
     render() {
@@ -159,7 +167,10 @@ export default class MoviesPage extends Component {
                             <ul className="pagination ">{
                                 pageNumberArr.map((pageNumber) => {
                                     let additional = pageNumber == currentPage ? "page-item active" : "page-item";
-                                    return (< li className={additional} >
+                                    return (< li className={additional} aria-current="page"
+                                        onClick={() => {
+                                        this.changeCurrentPage(pageNumber)
+                                    }}>
                                         <span className="page-link">{pageNumber}</span>
                                     </li>)
 
