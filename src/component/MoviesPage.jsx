@@ -3,7 +3,7 @@ import { getMovies } from '../temp/MovieService'
 
 export default class MoviesPage extends Component {
     state = {
-        movies: getMovies(),
+        movies: [],
         currSearchText: "",
         limit: 4,
         currentPage: 1
@@ -78,6 +78,14 @@ export default class MoviesPage extends Component {
     changeCurrentPage = (pageNumber) => {
         this.setState({
             currentPage:pageNumber
+        })
+    }
+
+    async componentDidMount() {
+        let resp = await fetch("https://react-backend101.herokuapp.com/movies");
+        let jsonMovies = await resp.json()
+        this.setState({
+            movies: jsonMovies.movies
         })
     }
     render() {
