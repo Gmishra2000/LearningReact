@@ -6,7 +6,7 @@ export default class MoviesPage extends Component {
         movies: getMovies(),
         currSearchText: "",
         limit: 4,
-        currentPage:1 
+        currentPage: 1
 
     }
     deleteEntry = (id) => {
@@ -51,7 +51,7 @@ export default class MoviesPage extends Component {
         console.log("hello");
         let currLimit = e.target.value;
         this.setState({
-            limit:currLimit
+            limit: currLimit
         })
     }
 
@@ -74,7 +74,7 @@ export default class MoviesPage extends Component {
     }
     render() {
         // console.log(this.state.movies);
-        let { movies, currSearchText,limit,currentPage} = this.state;
+        let { movies, currSearchText, limit, currentPage } = this.state;
         let filteredArr = movies.filter((movieObj) => {
             let title = movieObj.title.trim().toLowerCase();
             return title.includes(currSearchText.trim().toLowerCase());
@@ -83,6 +83,15 @@ export default class MoviesPage extends Component {
         if (currSearchText === "") {
             filteredArr = this.state.movies;
         }
+
+        // number of pages 
+        let numberofPage = Math.ceil(filteredArr.length / limit);
+        let pageNumberArr = []
+        for (let i = 0; i < numberofPage; i++) {
+            pageNumberArr.push(i + 1);
+        }
+
+
         // console.log(filteredArr);
         // si -> (pageNumber - 1) * limit;
         // ei -> si + limit
@@ -97,6 +106,11 @@ export default class MoviesPage extends Component {
                 </div>
                 <div className="col-9">
                     <input type="search" value={currSearchText} onChange={this.setCurrentText} />
+                    <input type="number" className="col-1"
+                        placeholder="no of elements/page"
+                        value={limit}
+                        onChange={this.changelimit}
+                    />
                     <table className="table">
                         <thead>
                             <tr>
@@ -138,28 +152,31 @@ export default class MoviesPage extends Component {
                         </tbody>
                     </table>
                     <div className="row">
-                        
+
                         {/* <input type="number" className="pageNumber" placeholder="page number" /> */}
-                        <input type="number" className="col-1"
-                            placeholder="no of elements/page"
-                            value={limit}
-                            onChange={this.changelimit}
-                        />
+                        
                         <nav aria-label="..." className="col-2">
-                            <ul className="pagination ">
-                                <li className="page-item active">
-                                    <span className="page-link">1</span>
-                                </li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <ul className="pagination ">{
+                                pageNumberArr.map((pageNumber) => {
+                                    let additional = pageNumber == currentPage ? "page-item active" : "page-item";
+                                    return (< li className={additional} >
+                                        <span className="page-link">{pageNumber}</span>
+                                    </li>)
+
+
+                                })
+                                
+                            }
+                                
+                               
                             </ul>
                         </nav>
-                </div>
-                
+                    </div>
+
                 </div>
 
 
-            </div>
+            </div >
         )
     }
 }
