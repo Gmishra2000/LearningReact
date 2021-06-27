@@ -4,9 +4,11 @@ import { getMovies } from '../temp/MovieService'
 export default class MoviesPage extends Component {
     state = {
         movies: [],
+        genres: [{id:1, name:"All Genres"}],
         currSearchText: "",
         limit: 4,
-        currentPage: 1
+        currentPage: 1,
+        cGenre:"All Genres"
 
     }
     deleteEntry = (id) => {
@@ -81,25 +83,51 @@ export default class MoviesPage extends Component {
         })
     }
 
+    groupByGenre = (name) => {
+        this.setState({
+            cGenre: name,
+            currSearchText: ""
+        })
+    }
+
     async componentDidMount() {
         let resp = await fetch("https://react-backend101.herokuapp.com/movies");
         let jsonMovies = await resp.json()
         this.setState({
             movies: jsonMovies.movies
-        })
+        });
+        resp = await fetch("https://react-backend101.herokuapp.com/genres");
+        let jsonGenres = await resp.json();
+        this.setState(
+            {
+                genres: [...this.state.genres, ...jsonGenres.genres]
+            });
     }
+   
+   
     render() {
         // console.log(this.state.movies);
-        let { movies, currSearchText, limit, currentPage } = this.state;
-        let filteredArr = movies.filter((movieObj) => {
-            let title = movieObj.title.trim().toLowerCase();
-            return title.includes(currSearchText.trim().toLowerCase());
-        })
-
-        if (currSearchText === "") {
-            filteredArr = this.state.movies;
+        let { movies, currSearchText, limit, currentPage,genres,cGenre } = this.state;
+       // search on genre basis
+        let filteredArr = movies;
+        if (cGenre != "All Genres") {
+            filteredArr = movies.filter((movieObj) => {
+                return movieObj.genre.name == cGenre;
+            })
         }
+        // search term
+       
 
+        if (currSearchText!= "") {
+            filteredArr = filteredArr.filter((movieObj) => {
+                let title = movieObj.title.trim().toLowerCase();
+                return title.includes(currSearchText.trim().toLowerCase());
+            })
+
+        } 
+             
+
+        
         // number of pages 
         let numberofPage = Math.ceil(filteredArr.length / limit);
         let pageNumberArr = []
@@ -118,7 +146,14 @@ export default class MoviesPage extends Component {
         return (
             <div className="row">
                 <div className="col-3">
-                    hello
+                    <ul class="list-group">
+                        {
+                            genres.map((cgobj) => {
+                                return (<li class="list-group-item" key={cgobj.id} onClick ={() => {this.groupByGenre(cgobj.name)}}>{cgobj.name}</li>)
+                            })
+                        }
+                        
+                    </ul>
                 </div>
                 <div className="col-9">
                     <input type="search" value={currSearchText} onChange={this.setCurrentText} />
